@@ -19,7 +19,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The API uses an SQLite database `penny.db` in the repository directory.
+The API uses an SQLite database located at `instance/penny.db`. The file will be
+created automatically when the application starts.
 
 ## Endpoints
 

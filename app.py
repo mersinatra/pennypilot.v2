@@ -2,13 +2,16 @@ from datetime import date
 from flask import Flask, jsonify, request, abort, send_from_directory
 
 from database import init_db, db
+import os
 from models import Category, Transaction, Budget, RecurringItem
 
 
 # Serve static files like index.html and dashboard.js from the project root
 app = Flask(__name__, static_url_path="", static_folder=".")
-# Using SQLite database in the current directory
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///penny.db"
+# Ensure the instance folder exists and set the database path
+db_path = os.path.join(app.root_path, "instance", "penny.db")
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 init_db(app)

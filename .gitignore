@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+penny.db
+instance/penny.db
+venv/
