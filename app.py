@@ -3,6 +3,7 @@ import logging
 import os
 
 from flask import Flask, jsonify, request, abort, send_from_directory
+from werkzeug.exceptions import HTTPException
 
 from database import init_db, db
 from models import Category, Transaction, Budget, RecurringItem
@@ -22,6 +23,14 @@ log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=getattr(logging, log_level, logging.INFO))
 
 init_db(app)
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    """Return JSON for HTTP errors."""
+    response = jsonify(error=e.description or e.name)
+    response.status_code = e.code
+    return response
 
 
 # Helper for generic CRUD operations

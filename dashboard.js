@@ -115,7 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('open-category-modal-page')?.addEventListener('click', () => openModal('category-modal'));
     document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
 
-    document.getElementById('open-budget-modal')?.addEventListener('click', openBudgetModal);
+    
+
+    document.getElementById('open-budget-modal-page')?.addEventListener('click', openBudgetModal);
     document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
 
     document.getElementById('open-recurring-modal')?.addEventListener('click', openRecurringModal);
@@ -157,11 +159,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ------- API helpers -------
-async function api(url, options={}) {
-    options.headers = Object.assign({'Content-Type': 'application/json'}, options.headers || {});
+async function api(url, options = {}) {
+    options.headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
     const res = await fetch(url, options);
-    if (!res.ok) throw new Error('API request failed');
-    if (res.status !== 204) return res.json();
+    const text = await res.text();
+    let data = null;
+    try {
+        data = text ? JSON.parse(text) : null;
+    } catch (_) {
+        data = null;
+    }
+    if (!res.ok) {
+        const message = data && data.error ? data.error : 'API request failed';
+        throw new Error(message);
+    }
+    return data;
 }
 
 // Categories
@@ -189,7 +201,7 @@ async function loadCategories() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load categories';
+        lists.forEach(l => l.textContent = err.message || 'Failed to load categories');
     }
 }
 
@@ -208,25 +220,37 @@ async function createCategory() {
     const input = document.getElementById('category-name');
     const name = input.value.trim();
     if (!name) return;
-    await api('/categories', {method: 'POST', body: JSON.stringify({name})});
-    input.value = '';
-    loadCategories();
-    populateCategorySelect();
+    try {
+        await api('/categories', {method: 'POST', body: JSON.stringify({ name })});
+        input.value = '';
+        loadCategories();
+        populateCategorySelect();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function editCategory(id, current) {
     const name = prompt('Category name', current);
     if (!name) return;
-    await api(`/categories/${id}`, {method: 'PUT', body: JSON.stringify({name})});
-    loadCategories();
-    populateCategorySelect();
+    try {
+        await api(`/categories/${id}`, {method: 'PUT', body: JSON.stringify({ name })});
+        loadCategories();
+        populateCategorySelect();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function deleteCategory(id) {
     if (!confirm('Delete category?')) return;
-    await api(`/categories/${id}`, {method: 'DELETE'});
-    loadCategories();
-    populateCategorySelect();
+    try {
+        await api(`/categories/${id}`, {method: 'DELETE'});
+        loadCategories();
+        populateCategorySelect();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 // Transactions
@@ -254,7 +278,7 @@ async function loadTransactions() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load transactions';
+        lists.forEach(l => l.textContent = err.message || 'Failed to load transactions');
     }
 }
 
@@ -264,51 +288,67 @@ async function createTransaction() {
     const date = document.getElementById('transaction-date').value;
     const category = parseInt(document.getElementById('transaction-category').value);
     if (!desc || isNaN(amount)) return;
-    await api('/transactions', {method: 'POST', body: JSON.stringify({description: desc, amount, date, category_id: category})});
-    document.getElementById('transaction-desc').value = '';
-    document.getElementById('transaction-amount').value = '';
-    loadTransactions();
+    try {
+        await api('/transactions', {method: 'POST', body: JSON.stringify({ description: desc, amount, date, category_id: category })});
+        document.getElementById('transaction-desc').value = '';
+        document.getElementById('transaction-amount').value = '';
+        loadTransactions();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function submitTransactionForm() {
     const id = document.getElementById('transaction-id').value;
-    if (id) {
-        await api(`/transactions/${id}`, {method: 'PUT', body: JSON.stringify({
-            description: document.getElementById('transaction-desc').value.trim(),
-            amount: parseFloat(document.getElementById('transaction-amount').value),
-            date: document.getElementById('transaction-date').value,
-            category_id: parseInt(document.getElementById('transaction-category').value)
-        })});
-    } else {
-        await createTransaction();
+    try {
+        if (id) {
+            await api(`/transactions/${id}`, {method: 'PUT', body: JSON.stringify({
+                description: document.getElementById('transaction-desc').value.trim(),
+                amount: parseFloat(document.getElementById('transaction-amount').value),
+                date: document.getElementById('transaction-date').value,
+                category_id: parseInt(document.getElementById('transaction-category').value)
+            })});
+        } else {
+            await createTransaction();
+        }
+        closeModal('transaction-modal');
+        document.getElementById('transaction-id').value = '';
+        document.getElementById('transaction-desc').value = '';
+        document.getElementById('transaction-amount').value = '';
+        loadTransactions();
+    } catch (err) {
+        alert(err.message);
     }
-    closeModal('transaction-modal');
-    document.getElementById('transaction-id').value = '';
-    document.getElementById('transaction-desc').value = '';
-    document.getElementById('transaction-amount').value = '';
-    loadTransactions();
 }
 
 async function editTransaction(id) {
-    const t = await api(`/transactions/${id}`);
-    document.getElementById('transaction-id').value = t.id;
-    document.getElementById('transaction-desc').value = t.description;
-    document.getElementById('transaction-amount').value = t.amount;
-    document.getElementById('transaction-date').value = t.date;
-    document.getElementById('transaction-category').value = t.category_id;
-    openModal('transaction-modal');
-}
+    try {
+        const t = await api(`/transactions/${id}`);
+        document.getElementById('transaction-id').value = t.id;
+        document.getElementById('transaction-desc').value = t.description;
+        document.getElementById('transaction-amount').value = t.amount;
+        document.getElementById('transaction-date').value = t.date;
+        document.getElementById('transaction-category').value = t.category_id;
+        openModal('transaction-modal');
+    } catch (err) {
+        alert(err.message);
+    }
 
 async function deleteTransaction(id) {
     if (!confirm('Delete transaction?')) return;
-    await api(`/transactions/${id}`, {method: 'DELETE'});
-    loadTransactions();
+    try {
+        await api(`/transactions/${id}`, {method: 'DELETE'});
+        loadTransactions();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 // Budgets
 async function loadBudgets() {
     const lists = [
-        document.getElementById('budgets-list')
+        document.getElementById('budgets-list'),
+        document.getElementById('budgets-page-list')
     ].filter(Boolean);
     if (lists.length === 0) return;
     try {
@@ -329,7 +369,7 @@ async function loadBudgets() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load budgets';
+        lists.forEach(l => l.textContent = err.message || 'Failed to load budgets');
     }
 }
 
@@ -339,10 +379,14 @@ async function createBudget() {
     const start = document.getElementById('budget-start').value;
     const end = document.getElementById('budget-end').value;
     if (!name || isNaN(amount) || !start) return;
-    await api('/budgets', {method: 'POST', body: JSON.stringify({name, amount, start_date: start, end_date: end})});
-    document.getElementById('budget-name').value = '';
-    document.getElementById('budget-amount').value = '';
-    loadBudgets();
+    try {
+        await api('/budgets', {method: 'POST', body: JSON.stringify({ name, amount, start_date: start, end_date: end })});
+        document.getElementById('budget-name').value = '';
+        document.getElementById('budget-amount').value = '';
+        loadBudgets();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function submitBudgetForm() {
@@ -353,32 +397,44 @@ async function submitBudgetForm() {
     const end = document.getElementById('budget-end').value;
     if (!name || isNaN(amount) || !start) return;
     const payload = {name, amount, start_date: start, end_date: end};
-    if (id) {
-        await api(`/budgets/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
-    } else {
-        await api('/budgets', {method: 'POST', body: JSON.stringify(payload)});
+    try {
+        if (id) {
+            await api(`/budgets/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
+        } else {
+            await api('/budgets', {method: 'POST', body: JSON.stringify(payload)});
+        }
+        closeModal('budget-modal');
+        document.getElementById('budget-id').value = '';
+        document.getElementById('budget-name').value = '';
+        document.getElementById('budget-amount').value = '';
+        loadBudgets();
+    } catch (err) {
+        alert(err.message);
     }
-    closeModal('budget-modal');
-    document.getElementById('budget-id').value = '';
-    document.getElementById('budget-name').value = '';
-    document.getElementById('budget-amount').value = '';
-    loadBudgets();
 }
 
 async function editBudget(id) {
-    const b = await api(`/budgets/${id}`);
-    document.getElementById('budget-id').value = b.id;
-    document.getElementById('budget-name').value = b.name;
-    document.getElementById('budget-amount').value = b.amount;
-    document.getElementById('budget-start').value = b.start_date;
-    document.getElementById('budget-end').value = b.end_date || '';
-    openModal('budget-modal');
-}
+    try {
+        const b = await api(`/budgets/${id}`);
+        document.getElementById('budget-id').value = b.id;
+        document.getElementById('budget-name').value = b.name;
+        document.getElementById('budget-amount').value = b.amount;
+        document.getElementById('budget-start').value = b.start_date;
+        document.getElementById('budget-end').value = b.end_date || '';
+        openModal('budget-modal');
+    } catch (err) {
+        alert(err.message);
+    }
+
 
 async function deleteBudget(id) {
     if (!confirm('Delete budget?')) return;
-    await api(`/budgets/${id}`, {method: 'DELETE'});
-    loadBudgets();
+    try {
+        await api(`/budgets/${id}`, {method: 'DELETE'});
+        loadBudgets();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 // Recurring items
@@ -406,7 +462,7 @@ async function loadRecurringItems() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load recurrings';
+        lists.forEach(l => l.textContent = err.message || 'Failed to load recurrings');
     }
 }
 
@@ -416,10 +472,14 @@ async function createRecurringItem() {
     const frequency = document.getElementById('recurring-frequency').value.trim();
     const next = document.getElementById('recurring-next').value;
     if (!name || isNaN(amount) || !frequency || !next) return;
-    await api('/recurring_items', {method: 'POST', body: JSON.stringify({name, amount, frequency, next_due_date: next})});
-    document.getElementById('recurring-name').value = '';
-    document.getElementById('recurring-amount').value = '';
-    loadRecurringItems();
+    try {
+        await api('/recurring_items', {method: 'POST', body: JSON.stringify({ name, amount, frequency, next_due_date: next })});
+        document.getElementById('recurring-name').value = '';
+        document.getElementById('recurring-amount').value = '';
+        loadRecurringItems();
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function submitRecurringForm() {
@@ -430,30 +490,43 @@ async function submitRecurringForm() {
     const next = document.getElementById('recurring-next').value;
     if (!name || isNaN(amount) || !frequency || !next) return;
     const payload = {name, amount, frequency, next_due_date: next};
-    if (id) {
-        await api(`/recurring_items/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
-    } else {
-        await api('/recurring_items', {method: 'POST', body: JSON.stringify(payload)});
+    try {
+        if (id) {
+            await api(`/recurring_items/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
+        } else {
+            await api('/recurring_items', {method: 'POST', body: JSON.stringify(payload)});
+        }
+        closeModal('recurring-modal');
+        document.getElementById('recurring-id').value = '';
+        document.getElementById('recurring-name').value = '';
+        document.getElementById('recurring-amount').value = '';
+        loadRecurringItems();
+    } catch (err) {
+        alert(err.message);
     }
-    closeModal('recurring-modal');
-    document.getElementById('recurring-id').value = '';
-    document.getElementById('recurring-name').value = '';
-    document.getElementById('recurring-amount').value = '';
-    loadRecurringItems();
 }
 
+
 async function editRecurring(id) {
-    const r = await api(`/recurring_items/${id}`);
-    document.getElementById('recurring-id').value = r.id;
-    document.getElementById('recurring-name').value = r.name;
-    document.getElementById('recurring-amount').value = r.amount;
-    document.getElementById('recurring-frequency').value = r.frequency;
-    document.getElementById('recurring-next').value = r.next_due_date;
-    openModal('recurring-modal');
+    try {
+        const r = await api(`/recurring_items/${id}`);
+        document.getElementById('recurring-id').value = r.id;
+        document.getElementById('recurring-name').value = r.name;
+        document.getElementById('recurring-amount').value = r.amount;
+        document.getElementById('recurring-frequency').value = r.frequency;
+        document.getElementById('recurring-next').value = r.next_due_date;
+        openModal('recurring-modal');
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 async function deleteRecurring(id) {
     if (!confirm('Delete recurring item?')) return;
-    await api(`/recurring_items/${id}`, {method: 'DELETE'});
-    loadRecurringItems();
+    try {
+        await api(`/recurring_items/${id}`, {method: 'DELETE'});
+        loadRecurringItems();
+    } catch (err) {
+        alert(err.message);
+    }
 }
