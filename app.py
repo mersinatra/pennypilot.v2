@@ -1,8 +1,10 @@
 from datetime import date
+import logging
+import os
+
 from flask import Flask, jsonify, request, abort, send_from_directory
 
 from database import init_db, db
-import os
 from models import Category, Transaction, Budget, RecurringItem
 
 
@@ -11,8 +13,13 @@ app = Flask(__name__, static_url_path="", static_folder=".")
 # Ensure the instance folder exists and set the database path
 db_path = os.path.join(app.root_path, "instance", "penny.db")
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+
+db_uri = os.environ.get("DATABASE_URI", f"sqlite:///{db_path}")
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=getattr(logging, log_level, logging.INFO))
 
 init_db(app)
 
@@ -41,6 +48,7 @@ def create_category():
     category = Category(name=name)
     db.session.add(category)
     db.session.commit()
+    app.logger.info("Created category %s", category.id)
     return jsonify(category.to_dict()), 201
 
 
@@ -57,6 +65,7 @@ def update_category(category_id):
     if "name" in data:
         category.name = data["name"]
     db.session.commit()
+    app.logger.info("Updated category %s", category.id)
     return jsonify(category.to_dict())
 
 
@@ -65,6 +74,7 @@ def delete_category(category_id):
     category = get_model(Category, category_id)
     db.session.delete(category)
     db.session.commit()
+    app.logger.info("Deleted category %s", category.id)
     return "", 204
 
 
@@ -88,6 +98,7 @@ def create_transaction():
         abort(400)
     db.session.add(t)
     db.session.commit()
+    app.logger.info("Created transaction %s", t.id)
     return jsonify(t.to_dict()), 201
 
 
@@ -110,6 +121,7 @@ def update_transaction(transaction_id):
     if "category_id" in data:
         t.category_id = data["category_id"]
     db.session.commit()
+    app.logger.info("Updated transaction %s", t.id)
     return jsonify(t.to_dict())
 
 
@@ -118,6 +130,7 @@ def delete_transaction(transaction_id):
     t = get_model(Transaction, transaction_id)
     db.session.delete(t)
     db.session.commit()
+    app.logger.info("Deleted transaction %s", t.id)
     return "", 204
 
 
@@ -141,6 +154,7 @@ def create_budget():
         abort(400)
     db.session.add(b)
     db.session.commit()
+    app.logger.info("Created budget %s", b.id)
     return jsonify(b.to_dict()), 201
 
 
@@ -165,6 +179,7 @@ def update_budget(budget_id):
             date.fromisoformat(data["end_date"]) if data["end_date"] else None
         )
     db.session.commit()
+    app.logger.info("Updated budget %s", b.id)
     return jsonify(b.to_dict())
 
 
@@ -173,6 +188,7 @@ def delete_budget(budget_id):
     b = get_model(Budget, budget_id)
     db.session.delete(b)
     db.session.commit()
+    app.logger.info("Deleted budget %s", b.id)
     return "", 204
 
 
@@ -196,6 +212,7 @@ def create_recurring_item():
         abort(400)
     db.session.add(r)
     db.session.commit()
+    app.logger.info("Created recurring item %s", r.id)
     return jsonify(r.to_dict()), 201
 
 
@@ -218,6 +235,7 @@ def update_recurring_item(item_id):
     if "next_due_date" in data:
         r.next_due_date = date.fromisoformat(data["next_due_date"])
     db.session.commit()
+    app.logger.info("Updated recurring item %s", r.id)
     return jsonify(r.to_dict())
 
 
@@ -226,6 +244,7 @@ def delete_recurring_item(item_id):
     r = get_model(RecurringItem, item_id)
     db.session.delete(r)
     db.session.commit()
+    app.logger.info("Deleted recurring item %s", r.id)
     return "", 204
 
 @app.route('/')
