@@ -115,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('open-category-modal-page')?.addEventListener('click', () => openModal('category-modal'));
     document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
 
-    document.getElementById('open-budget-modal')?.addEventListener('click', openBudgetModal);
+    
+
     document.getElementById('open-budget-modal-page')?.addEventListener('click', openBudgetModal);
     document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
 
@@ -332,7 +333,6 @@ async function editTransaction(id) {
     } catch (err) {
         alert(err.message);
     }
-}
 
 async function deleteTransaction(id) {
     if (!confirm('Delete transaction?')) return;
@@ -425,7 +425,7 @@ async function editBudget(id) {
     } catch (err) {
         alert(err.message);
     }
-}
+
 
 async function deleteBudget(id) {
     if (!confirm('Delete budget?')) return;
@@ -505,6 +505,7 @@ async function submitRecurringForm() {
         alert(err.message);
     }
 }
+
 
 async function editRecurring(id) {
     try {
