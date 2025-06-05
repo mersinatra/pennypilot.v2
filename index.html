@@ -70,7 +70,13 @@
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
                         <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
                     </svg>
-                    <span>Categories</span>
+                <span>Categories</span>
+                </a>
+                <a href="#" data-page="budgets" class="flex items-center space-x-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-dark-card rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5z"></path>
+                    </svg>
+                    <span>Budgets</span>
                 </a>
                 <a href="#" data-page="recurrings" class="flex items-center space-x-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-dark-card rounded-lg">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -197,6 +203,12 @@
             <div id="categories-page-list" class="space-y-2 text-sm mb-4"></div>
         </div>
 
+        <div id="page-budgets" class="page hidden">
+            <h1 class="text-3xl font-bold mb-8">Budgets</h1>
+            <button id="open-budget-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Budget</button>
+            <div id="budgets-page-list" class="space-y-2 text-sm mb-4"></div>
+        </div>
+
         <div id="page-recurrings" class="page hidden">
             <h1 class="text-3xl font-bold mb-8">Recurring Items</h1>
             <button id="open-recurring-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Recurring</button>
@@ -220,6 +232,7 @@
                 <button data-page="dashboard" class="px-4 py-2 bg-accent-blue text-white rounded-lg whitespace-nowrap">Dashboard</button>
                 <button data-page="transactions" class="px-4 py-2 text-gray-400 whitespace-nowrap">Transactions</button>
                 <button data-page="categories" class="px-4 py-2 text-gray-400 whitespace-nowrap">Categories</button>
+                <button data-page="budgets" class="px-4 py-2 text-gray-400 whitespace-nowrap">Budgets</button>
                 <button data-page="recurrings" class="px-4 py-2 text-gray-400 whitespace-nowrap">Recurrings</button>
             </div>
         </div>

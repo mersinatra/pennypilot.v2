@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
 
     document.getElementById('open-budget-modal')?.addEventListener('click', openBudgetModal);
+    document.getElementById('open-budget-modal-page')?.addEventListener('click', openBudgetModal);
     document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
 
     document.getElementById('open-recurring-modal')?.addEventListener('click', openRecurringModal);
@@ -308,7 +309,8 @@ async function deleteTransaction(id) {
 // Budgets
 async function loadBudgets() {
     const lists = [
-        document.getElementById('budgets-list')
+        document.getElementById('budgets-list'),
+        document.getElementById('budgets-page-list')
     ].filter(Boolean);
     if (lists.length === 0) return;
     try {
