@@ -224,6 +224,10 @@ def delete_recurring_item(item_id):
     db.session.commit()
     return "", 204
 
+@app.route('/')
+def index():
+    return "PennyPilot API is up and running!"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
