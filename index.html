@@ -99,13 +99,13 @@
 
         <!-- Main Content -->
         <div class="flex-1 p-8 overflow-y-auto">
-        <div id="page-dashboard" class="page">
+        <div id="page-dashboard" class="page max-w-[1160px] mx-auto">
             <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
-            
+
             <!-- Top Charts Row -->
-            <div class="grid grid-cols-2 gap-8 mb-8">
+            <div class="grid grid-cols-12 gap-x-6 gap-y-8 mb-8">
                 <!-- Performance Chart -->
-                <div class="bg-dark-card rounded-xl p-6">
+                <div class="col-span-6 bg-dark-card rounded-xl p-6 h-[240px]">
                     <div class="h-48 relative">
                         <div class="absolute top-4 left-0">
                             <span class="bg-accent-green text-dark-bg px-2 py-1 rounded text-sm font-medium">$0 under</span>
@@ -127,7 +127,7 @@
                 </div>
 
                 <!-- Spending Chart -->
-                <div class="bg-dark-card rounded-xl p-6">
+                <div class="col-span-6 bg-dark-card rounded-xl p-6 h-[240px]">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex space-x-4">
                             <button class="px-3 py-1 text-sm text-gray-400">1D</button>
@@ -149,9 +149,9 @@
             </div>
 
             <!-- Bottom Row -->
-            <div class="grid grid-cols-2 gap-8">
+            <div class="grid grid-cols-12 gap-x-6 gap-y-8">
                 <!-- Transactions to Review -->
-                <div class="bg-dark-card rounded-xl p-6">
+                <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[360px]">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold">Transactions To Review</h2>
                         <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
@@ -166,25 +166,23 @@
                 </div>
 
                 <!-- Top Categories -->
-                <div class="bg-dark-card rounded-xl p-6">
-                    <h2 class="text-xl font-semibold mb-6">Top Categories</h2>
-                    <div id="categories-list" class="space-y-2 text-sm"></div>
-                </div>
+                <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[360px]">
+                <h2 class="text-xl font-semibold mb-6">Top Categories</h2>
+                <div id="categories-list" class="space-y-2 text-sm"></div>
             </div>
-
             <!-- Monthly Income Section -->
-            <div class="bg-dark-card rounded-xl p-6 mt-8">
+            <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[240px]">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold">Monthly Income</h2>
                     <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
                 </div>
                 <div id="budgets-list" class="space-y-2 text-sm mb-4"></div>
             </div>
-
             <!-- Next Two Weeks Section -->
-            <div class="bg-dark-card rounded-xl p-6 mt-8">
+            <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[240px]">
                 <h2 class="text-xl font-semibold mb-6">Next Two Weeks</h2>
                 <div id="recurring-list" class="space-y-2 text-sm"></div>
+            </div>
             </div>
         </div>
         <div id="page-transactions" class="page hidden">
