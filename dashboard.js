@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
 
     document.getElementById('open-budget-modal')?.addEventListener('click', openBudgetModal);
+    document.getElementById('open-budget-modal-page')?.addEventListener('click', openBudgetModal);
     document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
 
     document.getElementById('open-recurring-modal')?.addEventListener('click', openRecurringModal);
@@ -189,7 +190,7 @@ async function loadCategories() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load categories';
+        lists.forEach(l => l.textContent = 'Failed to load categories');
     }
 }
 
@@ -254,7 +255,7 @@ async function loadTransactions() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load transactions';
+        lists.forEach(l => l.textContent = 'Failed to load transactions');
     }
 }
 
@@ -308,7 +309,8 @@ async function deleteTransaction(id) {
 // Budgets
 async function loadBudgets() {
     const lists = [
-        document.getElementById('budgets-list')
+        document.getElementById('budgets-list'),
+        document.getElementById('budgets-page-list')
     ].filter(Boolean);
     if (lists.length === 0) return;
     try {
@@ -329,7 +331,7 @@ async function loadBudgets() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load budgets';
+        lists.forEach(l => l.textContent = 'Failed to load budgets');
     }
 }
 
@@ -406,7 +408,7 @@ async function loadRecurringItems() {
             lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
-        list.textContent = 'Failed to load recurrings';
+        lists.forEach(l => l.textContent = 'Failed to load recurrings');
     }
 }
 
