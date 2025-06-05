@@ -1,11 +1,12 @@
 from datetime import date
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, send_from_directory
 
 from database import init_db, db
 from models import Category, Transaction, Budget, RecurringItem
 
 
-app = Flask(__name__)
+# Serve static files like index.html and dashboard.js from the project root
+app = Flask(__name__, static_url_path="", static_folder=".")
 # Using SQLite database in the current directory
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///penny.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -226,7 +227,8 @@ def delete_recurring_item(item_id):
 
 @app.route('/')
 def index():
-    return "PennyPilot API is up and running!"
+    """Serve the main dashboard."""
+    return send_from_directory('.', 'index.html')
 
 
 if __name__ == "__main__":
