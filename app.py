@@ -72,6 +72,11 @@ def update_category(category_id):
 @app.route("/categories/<int:category_id>", methods=["DELETE"])
 def delete_category(category_id):
     category = get_model(Category, category_id)
+    # Prevent deletion if any transactions reference this category
+    in_use = Transaction.query.filter_by(category_id=category_id).count()
+    if in_use:
+        abort(400, description="Category in use by transactions")
+
     db.session.delete(category)
     db.session.commit()
     app.logger.info("Deleted category %s", category.id)
