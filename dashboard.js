@@ -19,7 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mobile navigation functionality
+    // navigation functionality
+    function showPage(name) {
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        const page = document.getElementById(`page-${name}`);
+        if (page) page.classList.remove('hidden');
+    }
+
     const mobileNavButtons = document.querySelectorAll('.lg\\:hidden button');
     mobileNavButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -29,10 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             button.classList.remove('text-gray-400');
             button.classList.add('bg-accent-blue', 'text-white');
+            showPage(button.dataset.page);
         });
     });
 
-    // Desktop navigation functionality
     const desktopNavButtons = document.querySelectorAll('.hidden.lg\\:flex nav a');
     desktopNavButtons.forEach(button => {
         button.addEventListener('click', e => {
@@ -43,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             button.classList.remove('text-gray-400');
             button.classList.add('bg-accent-blue', 'text-white');
+            showPage(button.dataset.page);
         });
     });
 
@@ -69,6 +76,25 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTransactions();
     loadBudgets();
     loadRecurringItems();
+
+    // modal helpers
+    const openModal = id => document.getElementById(id)?.classList.remove('hidden');
+    const closeModal = id => document.getElementById(id)?.classList.add('hidden');
+
+    document.getElementById('open-transaction-modal')?.addEventListener('click', () => openModal('transaction-modal'));
+    document.getElementById('open-transaction-modal-page')?.addEventListener('click', () => openModal('transaction-modal'));
+    document.getElementById('close-transaction-modal')?.addEventListener('click', () => closeModal('transaction-modal'));
+
+    document.getElementById('open-category-modal')?.addEventListener('click', () => openModal('category-modal'));
+    document.getElementById('open-category-modal-page')?.addEventListener('click', () => openModal('category-modal'));
+    document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
+
+    document.getElementById('open-budget-modal')?.addEventListener('click', () => openModal('budget-modal'));
+    document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
+
+    document.getElementById('open-recurring-modal')?.addEventListener('click', () => openModal('recurring-modal'));
+    document.getElementById('open-recurring-modal-page')?.addEventListener('click', () => openModal('recurring-modal'));
+    document.getElementById('close-recurring-modal')?.addEventListener('click', () => closeModal('recurring-modal'));
 
     // form handlers
     const categoryForm = document.getElementById('category-form');
@@ -114,13 +140,16 @@ async function api(url, options={}) {
 
 // Categories
 async function loadCategories() {
-    const list = document.getElementById('categories-list');
-    if (!list) return;
+    const lists = [
+        document.getElementById('categories-list'),
+        document.getElementById('categories-page-list')
+    ].filter(Boolean);
+    if (lists.length === 0) return;
     try {
         const data = await api('/categories');
-        list.innerHTML = '';
+        lists.forEach(l => l.innerHTML = '');
         if (data.length === 0) {
-            list.textContent = 'No categories';
+            lists.forEach(l => l.textContent = 'No categories');
             return;
         }
         data.forEach(c => {
@@ -131,7 +160,7 @@ async function loadCategories() {
                     <button class="text-xs text-blue-400 mr-2" onclick="editCategory(${c.id}, '${c.name}')">Edit</button>
                     <button class="text-xs text-red-400" onclick="deleteCategory(${c.id})">Delete</button>
                 </div>`;
-            list.appendChild(row);
+            lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
         list.textContent = 'Failed to load categories';
@@ -176,13 +205,16 @@ async function deleteCategory(id) {
 
 // Transactions
 async function loadTransactions() {
-    const list = document.getElementById('transactions-list');
-    if (!list) return;
+    const lists = [
+        document.getElementById('transactions-list'),
+        document.getElementById('transactions-page-list')
+    ].filter(Boolean);
+    if (lists.length === 0) return;
     try {
         const data = await api('/transactions');
-        list.innerHTML = '';
+        lists.forEach(l => l.innerHTML = '');
         if (data.length === 0) {
-            list.textContent = 'No transactions';
+            lists.forEach(l => l.textContent = 'No transactions');
             return;
         }
         data.forEach(t => {
@@ -193,7 +225,7 @@ async function loadTransactions() {
                     <button class="text-xs text-blue-400 mr-2" onclick="editTransaction(${t.id})">Edit</button>
                     <button class="text-xs text-red-400" onclick="deleteTransaction(${t.id})">Delete</button>
                 </div>`;
-            list.appendChild(row);
+            lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
         list.textContent = 'Failed to load transactions';
@@ -229,13 +261,15 @@ async function deleteTransaction(id) {
 
 // Budgets
 async function loadBudgets() {
-    const list = document.getElementById('budgets-list');
-    if (!list) return;
+    const lists = [
+        document.getElementById('budgets-list')
+    ].filter(Boolean);
+    if (lists.length === 0) return;
     try {
         const data = await api('/budgets');
-        list.innerHTML = '';
+        lists.forEach(l => l.innerHTML = '');
         if (data.length === 0) {
-            list.textContent = 'No budgets';
+            lists.forEach(l => l.textContent = 'No budgets');
             return;
         }
         data.forEach(b => {
@@ -246,7 +280,7 @@ async function loadBudgets() {
                     <button class="text-xs text-blue-400 mr-2" onclick="editBudget(${b.id})">Edit</button>
                     <button class="text-xs text-red-400" onclick="deleteBudget(${b.id})">Delete</button>
                 </div>`;
-            list.appendChild(row);
+            lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
         list.textContent = 'Failed to load budgets';
@@ -282,13 +316,16 @@ async function deleteBudget(id) {
 
 // Recurring items
 async function loadRecurringItems() {
-    const list = document.getElementById('recurring-list');
-    if (!list) return;
+    const lists = [
+        document.getElementById('recurring-list'),
+        document.getElementById('recurring-page-list')
+    ].filter(Boolean);
+    if (lists.length === 0) return;
     try {
         const data = await api('/recurring_items');
-        list.innerHTML = '';
+        lists.forEach(l => l.innerHTML = '');
         if (data.length === 0) {
-            list.textContent = 'No recurring items';
+            lists.forEach(l => l.textContent = 'No recurring items');
             return;
         }
         data.forEach(r => {
@@ -299,7 +336,7 @@ async function loadRecurringItems() {
                     <button class="text-xs text-blue-400 mr-2" onclick="editRecurring(${r.id})">Edit</button>
                     <button class="text-xs text-red-400" onclick="deleteRecurring(${r.id})">Delete</button>
                 </div>`;
-            list.appendChild(row);
+            lists.forEach(l => l.appendChild(row.cloneNode(true)));
         });
     } catch (err) {
         list.textContent = 'Failed to load recurrings';
