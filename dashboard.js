@@ -81,19 +81,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const openModal = id => document.getElementById(id)?.classList.remove('hidden');
     const closeModal = id => document.getElementById(id)?.classList.add('hidden');
 
-    document.getElementById('open-transaction-modal')?.addEventListener('click', () => openModal('transaction-modal'));
-    document.getElementById('open-transaction-modal-page')?.addEventListener('click', () => openModal('transaction-modal'));
+    function openTransactionModal() {
+        document.getElementById('transaction-id').value = '';
+        document.getElementById('transaction-desc').value = '';
+        document.getElementById('transaction-amount').value = '';
+        document.getElementById('transaction-date').value = '';
+        openModal('transaction-modal');
+    }
+
+    function openBudgetModal() {
+        document.getElementById('budget-id').value = '';
+        document.getElementById('budget-name').value = '';
+        document.getElementById('budget-amount').value = '';
+        document.getElementById('budget-start').value = '';
+        document.getElementById('budget-end').value = '';
+        openModal('budget-modal');
+    }
+
+    function openRecurringModal() {
+        document.getElementById('recurring-id').value = '';
+        document.getElementById('recurring-name').value = '';
+        document.getElementById('recurring-amount').value = '';
+        document.getElementById('recurring-frequency').value = '';
+        document.getElementById('recurring-next').value = '';
+        openModal('recurring-modal');
+    }
+
+    document.getElementById('open-transaction-modal')?.addEventListener('click', openTransactionModal);
+    document.getElementById('open-transaction-modal-page')?.addEventListener('click', openTransactionModal);
     document.getElementById('close-transaction-modal')?.addEventListener('click', () => closeModal('transaction-modal'));
 
     document.getElementById('open-category-modal')?.addEventListener('click', () => openModal('category-modal'));
     document.getElementById('open-category-modal-page')?.addEventListener('click', () => openModal('category-modal'));
     document.getElementById('close-category-modal')?.addEventListener('click', () => closeModal('category-modal'));
 
-    document.getElementById('open-budget-modal')?.addEventListener('click', () => openModal('budget-modal'));
+    document.getElementById('open-budget-modal')?.addEventListener('click', openBudgetModal);
     document.getElementById('close-budget-modal')?.addEventListener('click', () => closeModal('budget-modal'));
 
-    document.getElementById('open-recurring-modal')?.addEventListener('click', () => openModal('recurring-modal'));
-    document.getElementById('open-recurring-modal-page')?.addEventListener('click', () => openModal('recurring-modal'));
+    document.getElementById('open-recurring-modal')?.addEventListener('click', openRecurringModal);
+    document.getElementById('open-recurring-modal-page')?.addEventListener('click', openRecurringModal);
     document.getElementById('close-recurring-modal')?.addEventListener('click', () => closeModal('recurring-modal'));
 
     // form handlers
@@ -109,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (transactionForm) {
         transactionForm.addEventListener('submit', e => {
             e.preventDefault();
-            createTransaction();
+            submitTransactionForm();
         });
     }
 
@@ -117,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (budgetForm) {
         budgetForm.addEventListener('submit', e => {
             e.preventDefault();
-            createBudget();
+            submitBudgetForm();
         });
     }
 
@@ -125,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (recurringForm) {
         recurringForm.addEventListener('submit', e => {
             e.preventDefault();
-            createRecurringItem();
+            submitRecurringForm();
         });
     }
 });
@@ -244,13 +270,33 @@ async function createTransaction() {
     loadTransactions();
 }
 
-async function editTransaction(id) {
-    const desc = prompt('Description');
-    if (desc === null) return;
-    const amount = prompt('Amount');
-    if (amount === null) return;
-    await api(`/transactions/${id}`, {method: 'PUT', body: JSON.stringify({description: desc, amount: parseFloat(amount)})});
+async function submitTransactionForm() {
+    const id = document.getElementById('transaction-id').value;
+    if (id) {
+        await api(`/transactions/${id}`, {method: 'PUT', body: JSON.stringify({
+            description: document.getElementById('transaction-desc').value.trim(),
+            amount: parseFloat(document.getElementById('transaction-amount').value),
+            date: document.getElementById('transaction-date').value,
+            category_id: parseInt(document.getElementById('transaction-category').value)
+        })});
+    } else {
+        await createTransaction();
+    }
+    closeModal('transaction-modal');
+    document.getElementById('transaction-id').value = '';
+    document.getElementById('transaction-desc').value = '';
+    document.getElementById('transaction-amount').value = '';
     loadTransactions();
+}
+
+async function editTransaction(id) {
+    const t = await api(`/transactions/${id}`);
+    document.getElementById('transaction-id').value = t.id;
+    document.getElementById('transaction-desc').value = t.description;
+    document.getElementById('transaction-amount').value = t.amount;
+    document.getElementById('transaction-date').value = t.date;
+    document.getElementById('transaction-category').value = t.category_id;
+    openModal('transaction-modal');
 }
 
 async function deleteTransaction(id) {
@@ -299,13 +345,34 @@ async function createBudget() {
     loadBudgets();
 }
 
-async function editBudget(id) {
-    const name = prompt('Name');
-    if (name === null) return;
-    const amount = prompt('Amount');
-    if (amount === null) return;
-    await api(`/budgets/${id}`, {method: 'PUT', body: JSON.stringify({name, amount: parseFloat(amount)})});
+async function submitBudgetForm() {
+    const id = document.getElementById('budget-id').value;
+    const name = document.getElementById('budget-name').value.trim();
+    const amount = parseFloat(document.getElementById('budget-amount').value);
+    const start = document.getElementById('budget-start').value;
+    const end = document.getElementById('budget-end').value;
+    if (!name || isNaN(amount) || !start) return;
+    const payload = {name, amount, start_date: start, end_date: end};
+    if (id) {
+        await api(`/budgets/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
+    } else {
+        await api('/budgets', {method: 'POST', body: JSON.stringify(payload)});
+    }
+    closeModal('budget-modal');
+    document.getElementById('budget-id').value = '';
+    document.getElementById('budget-name').value = '';
+    document.getElementById('budget-amount').value = '';
     loadBudgets();
+}
+
+async function editBudget(id) {
+    const b = await api(`/budgets/${id}`);
+    document.getElementById('budget-id').value = b.id;
+    document.getElementById('budget-name').value = b.name;
+    document.getElementById('budget-amount').value = b.amount;
+    document.getElementById('budget-start').value = b.start_date;
+    document.getElementById('budget-end').value = b.end_date || '';
+    openModal('budget-modal');
 }
 
 async function deleteBudget(id) {
@@ -355,13 +422,34 @@ async function createRecurringItem() {
     loadRecurringItems();
 }
 
-async function editRecurring(id) {
-    const name = prompt('Name');
-    if (name === null) return;
-    const amount = prompt('Amount');
-    if (amount === null) return;
-    await api(`/recurring_items/${id}`, {method: 'PUT', body: JSON.stringify({name, amount: parseFloat(amount)})});
+async function submitRecurringForm() {
+    const id = document.getElementById('recurring-id').value;
+    const name = document.getElementById('recurring-name').value.trim();
+    const amount = parseFloat(document.getElementById('recurring-amount').value);
+    const frequency = document.getElementById('recurring-frequency').value.trim();
+    const next = document.getElementById('recurring-next').value;
+    if (!name || isNaN(amount) || !frequency || !next) return;
+    const payload = {name, amount, frequency, next_due_date: next};
+    if (id) {
+        await api(`/recurring_items/${id}`, {method: 'PUT', body: JSON.stringify(payload)});
+    } else {
+        await api('/recurring_items', {method: 'POST', body: JSON.stringify(payload)});
+    }
+    closeModal('recurring-modal');
+    document.getElementById('recurring-id').value = '';
+    document.getElementById('recurring-name').value = '';
+    document.getElementById('recurring-amount').value = '';
     loadRecurringItems();
+}
+
+async function editRecurring(id) {
+    const r = await api(`/recurring_items/${id}`);
+    document.getElementById('recurring-id').value = r.id;
+    document.getElementById('recurring-name').value = r.name;
+    document.getElementById('recurring-amount').value = r.amount;
+    document.getElementById('recurring-frequency').value = r.frequency;
+    document.getElementById('recurring-next').value = r.next_due_date;
+    openModal('recurring-modal');
 }
 
 async function deleteRecurring(id) {
