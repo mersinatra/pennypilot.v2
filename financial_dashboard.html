@@ -156,10 +156,14 @@
                         <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
                     </div>
                     
-                    <div class="space-y-4">
-                        <div class="text-sm text-gray-400 mb-2">No transactions to review</div>
-                        <div class="text-gray-500 text-sm">All transactions are up to date</div>
-                    </div>
+                    <div id="transactions-list" class="space-y-2 text-sm"></div>
+                    <form id="transaction-form" class="space-y-2 mt-4">
+                        <input id="transaction-desc" class="w-full p-1 text-black rounded" placeholder="Description">
+                        <input id="transaction-amount" type="number" step="0.01" class="w-full p-1 text-black rounded" placeholder="Amount">
+                        <input id="transaction-date" type="date" class="w-full p-1 text-black rounded">
+                        <select id="transaction-category" class="w-full p-1 text-black rounded"></select>
+                        <button type="submit" class="bg-accent-blue text-white px-2 py-1 rounded">Add Transaction</button>
+                    </form>
 
                     <button class="mt-6 w-full flex items-center justify-center space-x-2 py-2 text-accent-green text-sm hover:bg-dark-bg rounded-lg">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -173,10 +177,11 @@
                 <div class="bg-dark-card rounded-xl p-6">
                     <h2 class="text-xl font-semibold mb-6">Top Categories</h2>
                     
-                    <div class="space-y-4">
-                        <div class="text-gray-500 text-sm">No spending data available</div>
-                        <div class="text-gray-400 text-xs">Start adding transactions to see your top spending categories</div>
-                    </div>
+                    <div id="categories-list" class="space-y-2 text-sm"></div>
+                    <form id="category-form" class="space-y-2 mt-4">
+                        <input id="category-name" class="w-full p-1 text-black rounded" placeholder="Category name">
+                        <button type="submit" class="bg-accent-blue text-white px-2 py-1 rounded">Add Category</button>
+                    </form>
                 </div>
             </div>
 
@@ -187,23 +192,27 @@
                     <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
                 </div>
                 
-                <div class="mb-6">
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold">$0.00</span>
-                        <span class="text-2xl font-bold">$0.00</span>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
-                        <div class="bg-accent-green h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="text-gray-500 text-sm">No income transactions found</div>
+                <div id="budgets-list" class="space-y-2 text-sm mb-4"></div>
+                <form id="budget-form" class="space-y-2">
+                    <input id="budget-name" class="w-full p-1 text-black rounded" placeholder="Budget name">
+                    <input id="budget-amount" type="number" step="0.01" class="w-full p-1 text-black rounded" placeholder="Amount">
+                    <input id="budget-start" type="date" class="w-full p-1 text-black rounded">
+                    <input id="budget-end" type="date" class="w-full p-1 text-black rounded">
+                    <button type="submit" class="bg-accent-blue text-white px-2 py-1 rounded">Add Budget</button>
+                </form>
             </div>
 
             <!-- Next Two Weeks Section -->
             <div class="bg-dark-card rounded-xl p-6 mt-8">
                 <h2 class="text-xl font-semibold mb-6">Next Two Weeks</h2>
-                <div class="text-gray-500 text-sm">No upcoming recurring transactions</div>
+                <div id="recurring-list" class="space-y-2 text-sm"></div>
+                <form id="recurring-form" class="space-y-2 mt-4">
+                    <input id="recurring-name" class="w-full p-1 text-black rounded" placeholder="Name">
+                    <input id="recurring-amount" type="number" step="0.01" class="w-full p-1 text-black rounded" placeholder="Amount">
+                    <input id="recurring-frequency" class="w-full p-1 text-black rounded" placeholder="Frequency">
+                    <input id="recurring-next" type="date" class="w-full p-1 text-black rounded">
+                    <button type="submit" class="bg-accent-blue text-white px-2 py-1 rounded">Add Recurring</button>
+                </form>
             </div>
         </div>
     </div>
@@ -356,91 +365,6 @@
         </div>
     </div>
 
-    <script>
-        // Simple interactivity for demonstration
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add smooth transitions
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.style.transition = 'all 0.2s ease';
-            });
-
-            // Add hover effects to cards
-            const cards = document.querySelectorAll('.bg-dark-card');
-            cards.forEach(card => {
-                card.style.transition = 'transform 0.2s ease';
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-2px)';
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Mobile navigation functionality
-            const mobileNavButtons = document.querySelectorAll('.lg\\:hidden button');
-            mobileNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    mobileNavButtons.forEach(btn => {
-                        btn.classList.remove('bg-accent-blue', 'text-white');
-                        btn.classList.add('text-gray-400');
-                    });
-                    
-                    // Add active class to clicked button
-                    button.classList.remove('text-gray-400');
-                    button.classList.add('bg-accent-blue', 'text-white');
-                });
-            });
-
-            // Desktop navigation functionality
-            const desktopNavButtons = document.querySelectorAll('.hidden.lg\\:flex nav a');
-            desktopNavButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    // Remove active class from all buttons
-                    desktopNavButtons.forEach(btn => {
-                        btn.classList.remove('bg-accent-blue', 'text-white');
-                        btn.classList.add('text-gray-400');
-                    });
-                    
-                    // Add active class to clicked button
-                    button.classList.remove('text-gray-400');
-                    button.classList.add('bg-accent-blue', 'text-white');
-                });
-            });
-
-            // Animate charts on load
-            const paths = document.querySelectorAll('svg path');
-            paths.forEach(path => {
-                const length = path.getTotalLength();
-                path.style.strokeDasharray = length;
-                path.style.strokeDashoffset = length;
-                path.style.animation = 'drawLine 2s ease-in-out forwards';
-            });
-
-            // Add CSS animation for line drawing
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes drawLine {
-                    to {
-                        stroke-dashoffset: 0;
-                    }
-                }
-                
-                .hover-lift:hover {
-                    transform: translateY(-4px);
-                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-                }
-            `;
-            document.head.appendChild(style);
-
-            // Add hover class to cards
-            cards.forEach(card => {
-                card.classList.add('hover-lift');
-            });
-        });
-    </script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
