@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Copilot - Financial Dashboard</title>
+    <title>PennyPilot - Financial Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -23,7 +24,8 @@
         }
     </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { font-family: 'Roboto', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
         .glass-effect { backdrop-filter: blur(10px); background: rgba(26, 31, 46, 0.8); }
         .gradient-line { background: linear-gradient(90deg, #f59e0b, #10b981); }
         .budget-gradient { background: linear-gradient(45deg, #3b82f6, #10b981); }
@@ -33,7 +35,7 @@
     <!-- Desktop Layout -->
     <div class="hidden lg:flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-dark-sidebar p-6 flex flex-col">
+        <div class="w-64 bg-dark-sidebar bg-opacity-90 p-6 flex flex-col shadow-xl rounded-2xl">
             <!-- Mac-style window controls -->
             <div class="flex space-x-2 mb-6">
                 <div class="w-3 h-3 bg-red-500 rounded-full"></div>
@@ -105,13 +107,13 @@
 
         <!-- Main Content -->
         <div class="flex-1 p-8 overflow-y-auto">
-        <div id="page-dashboard" class="page max-w-[1160px] mx-auto">
+        <div id="page-dashboard" class="page max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
 
             <!-- Top Charts Row -->
             <div class="grid grid-cols-12 gap-x-6 gap-y-8 mb-8">
                 <!-- Performance Chart -->
-                <div class="col-span-6 bg-dark-card rounded-xl p-6 h-[240px]">
+                <div class="col-span-6 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 h-[240px]">
                     <div class="h-48 relative">
                         <div class="absolute top-4 left-0">
                             <span class="bg-accent-green text-dark-bg px-2 py-1 rounded text-sm font-medium">$0 under</span>
@@ -133,7 +135,7 @@
                 </div>
 
                 <!-- Spending Chart -->
-                <div class="col-span-6 bg-dark-card rounded-xl p-6 h-[240px]">
+                <div class="col-span-6 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 h-[240px]">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex space-x-4">
                             <button class="px-3 py-1 text-sm text-gray-400">1D</button>
@@ -157,7 +159,7 @@
             <!-- Bottom Row -->
             <div class="grid grid-cols-12 gap-x-6 gap-y-8">
                 <!-- Transactions to Review -->
-                <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[360px]">
+                <div class="col-span-4 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 min-h-[360px]">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold">Transactions To Review</h2>
                         <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
@@ -172,12 +174,12 @@
                 </div>
 
                 <!-- Top Categories -->
-                <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[360px]">
+                <div class="col-span-4 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 min-h-[360px]">
                 <h2 class="text-xl font-semibold mb-6">Top Categories</h2>
                 <div id="categories-list" class="space-y-2 text-sm"></div>
             </div>
             <!-- Monthly Income Section -->
-            <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[240px]">
+            <div class="col-span-4 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 min-h-[240px]">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold">Monthly Income</h2>
                     <button class="text-accent-blue text-sm hover:underline">VIEW ALL →</button>
@@ -185,31 +187,31 @@
                 <div id="budgets-list" class="space-y-2 text-sm mb-4"></div>
             </div>
             <!-- Next Two Weeks Section -->
-            <div class="col-span-4 bg-dark-card rounded-xl p-6 min-h-[240px]">
+            <div class="col-span-4 bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6 min-h-[240px]">
                 <h2 class="text-xl font-semibold mb-6">Next Two Weeks</h2>
                 <div id="recurring-list" class="space-y-2 text-sm"></div>
             </div>
             </div>
         </div>
-        <div id="page-transactions" class="page hidden">
+        <div id="page-transactions" class="page hidden max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-8">Transactions</h1>
             <button id="open-transaction-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Transaction</button>
             <div id="transactions-page-list" class="space-y-2 text-sm mb-4"></div>
         </div>
 
-        <div id="page-categories" class="page hidden">
+        <div id="page-categories" class="page hidden max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-8">Categories</h1>
             <button id="open-category-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Category</button>
             <div id="categories-page-list" class="space-y-2 text-sm mb-4"></div>
         </div>
 
-        <div id="page-budgets" class="page hidden">
+        <div id="page-budgets" class="page hidden max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-8">Budgets</h1>
             <button id="open-budget-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Budget</button>
             <div id="budgets-page-list" class="space-y-2 text-sm mb-4"></div>
         </div>
 
-        <div id="page-recurrings" class="page hidden">
+        <div id="page-recurrings" class="page hidden max-w-7xl mx-auto px-8">
             <h1 class="text-3xl font-bold mb-8">Recurring Items</h1>
             <button id="open-recurring-modal-page" class="mb-4 bg-accent-blue text-white px-3 py-1 rounded">Add Recurring</button>
             <div id="recurring-page-list" class="space-y-2 text-sm mb-4"></div>
@@ -218,8 +220,8 @@
     <!-- Mobile Layout -->
     <div class="lg:hidden">
         <!-- Mobile Header -->
-        <div class="bg-dark-sidebar p-4 flex items-center justify-between">
-            <div class="text-xl font-bold">Copilot</div>
+        <div class="bg-dark-sidebar bg-opacity-90 p-4 flex items-center justify-between shadow-md">
+            <div class="text-xl font-bold">PennyPilot</div>
             <svg class="w-6 h-6 text-accent-blue" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
@@ -240,7 +242,7 @@
         <!-- Mobile Content -->
         <div class="p-4 space-y-6">
             <!-- Budget Overview -->
-            <div class="bg-dark-card rounded-xl p-6">
+            <div class="bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6">
                 <div class="text-center">
                     <div class="text-3xl font-bold mb-2">$0 left</div>
                     <div class="text-gray-400 text-sm mb-4">out of $0 budgeted</div>
@@ -257,7 +259,7 @@
             </div>
 
             <!-- To Review -->
-            <div class="bg-dark-card rounded-xl p-6">
+            <div class="bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">TO REVIEW</h3>
                     <button class="text-accent-blue text-sm">view all →</button>
@@ -267,7 +269,7 @@
             </div>
 
             <!-- Budgets -->
-            <div class="bg-dark-card rounded-xl p-6">
+            <div class="bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">BUDGETS</h3>
                     <button class="text-accent-blue text-sm">view all →</button>
@@ -313,7 +315,7 @@
             </div>
 
             <!-- Upcoming -->
-            <div class="bg-dark-card rounded-xl p-6">
+            <div class="bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">UPCOMING</h3>
                     <button class="text-accent-blue text-sm">view all →</button>
@@ -323,7 +325,7 @@
             </div>
 
             <!-- Income -->
-            <div class="bg-dark-card rounded-xl p-6">
+            <div class="bg-dark-card bg-opacity-80 shadow-xl rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">INCOME</h3>
                     <button class="text-accent-blue text-sm">view all →</button>
@@ -370,7 +372,7 @@
         </div>
     <!-- Modals -->
     <div id="transaction-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-dark-card p-4 rounded w-80">
+        <div class="bg-dark-card bg-opacity-90 shadow-xl p-4 rounded-2xl w-80">
             <form id="transaction-form" class="space-y-2">
                 <input id="transaction-id" type="hidden">
                 <input id="transaction-desc" class="w-full p-1 text-black rounded" placeholder="Description">
@@ -385,7 +387,7 @@
         </div>
     </div>
     <div id="category-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-dark-card p-4 rounded w-80">
+        <div class="bg-dark-card bg-opacity-90 shadow-xl p-4 rounded-2xl w-80">
             <form id="category-form" class="space-y-2">
                 <input id="category-name" class="w-full p-1 text-black rounded" placeholder="Category name">
                 <div class="flex justify-end space-x-2">
@@ -396,7 +398,7 @@
         </div>
     </div>
     <div id="budget-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-dark-card p-4 rounded w-80">
+        <div class="bg-dark-card bg-opacity-90 shadow-xl p-4 rounded-2xl w-80">
             <form id="budget-form" class="space-y-2">
                 <input id="budget-id" type="hidden">
                 <input id="budget-name" class="w-full p-1 text-black rounded" placeholder="Budget name">
@@ -411,7 +413,7 @@
         </div>
     </div>
     <div id="recurring-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-dark-card p-4 rounded w-80">
+        <div class="bg-dark-card bg-opacity-90 shadow-xl p-4 rounded-2xl w-80">
             <form id="recurring-form" class="space-y-2">
                 <input id="recurring-id" type="hidden">
                 <input id="recurring-name" class="w-full p-1 text-black rounded" placeholder="Name">
